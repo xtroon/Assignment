@@ -1,5 +1,6 @@
 const User = require("../models/user.model");
 const Otp = require("../models/otp.model");
+const jwt = require("jsonwebtoken");
 
 
 // create OTP
@@ -29,10 +30,17 @@ async function verifyOTPAndLogin(req, res) {
       return res.status(400).json({ message: "Invalid or expired OTP" });
     }
     
-    const user = await User.create({ emailOrPhone });
-    await Otp.deleteOne({ _id: otpRecord._id }); // deleting created otp
+    // Find existing user or create new one
+    let user = await User.findOne({ emailOrPhone });
+    if (!user) {
+      user = await User.create({ emailOrPhone });
+    }
     
-    res.status(201).json({ message: "User Logged In", user });
+    await Otp.deleteOne({ _id: otpRecord._id }); // deleting created otp
+
+    // making jwt token
+    const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY || "your-secret-key");
+    res.status(201).json({ message: "User Logged In", token, user });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -56,7 +56,7 @@ const productSchema = new mongoose.Schema(
         }],
 
         exchangeEligible: {
-            type: Boolean,
+            type: String,
             required: true,
             enum: [
                 "YES",
