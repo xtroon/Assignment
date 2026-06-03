@@ -1,23 +1,40 @@
-# Assignment Project
+# Productr Assignment Project
 
-A full-stack application with a React frontend and Express backend.
+A full-stack application with a React (Vite) frontend and Express/MongoDB backend.
 
+Live: https://productr0.vercel.app/
 
 ## Project Structure
 
 - **client/** - React + Vite frontend with Tailwind CSS
-- **server/** - Express backend with MongoDB
+- **server/** - Express backend with MongoDB and Cloudinary image upload support
+
+---
 
 ## Getting Started
 
 ### 1. Environment Setup
 
-Create a `.env` file in the `server/` directory with your MongoDB connection details:
+Configure environment variables by creating `.env` files.
 
-```
-MONGODB_URI=your_mongodb_connection_string
+#### **Backend (`server/.env`)**
+Create a `.env` file inside the `server/` directory:
+```env
 PORT=5000
+MONGO_URI=your_mongodb_connection_string
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLIENT_URL=http://localhost:5173
 ```
+
+#### **Frontend (`client/.env`)**
+Create a `.env` file inside the `client/` directory:
+```env
+VITE_API_URL=http://localhost:5000/v1/api
+```
+
+---
 
 ### 2. Install Dependencies
 
@@ -33,25 +50,36 @@ cd server
 npm install
 ```
 
+---
+
 ## Running the Application
 
 ### Start Backend
 
+In one terminal:
 ```bash
 cd server
 npm start
 ```
-
-The backend will start on `http://localhost:5000` with nodemon for automatic restarts on file changes.
+The backend will start on `http://localhost:5000`. It connects to MongoDB and launches the Express server.
 
 ### Start Frontend
 
 In a new terminal:
-
 ```bash
 cd client
 npm run dev
 ```
+The frontend will start on `http://localhost:5173` (Vite default). 
 
-The frontend will start on `http://localhost:5173` (Vite default).
+---
 
+## Production Build & Deploys
+
+### Build Frontend
+To create a production-ready static bundle of the client app:
+```bash
+cd client
+npm run build
+```
+This outputs to the `client/dist/` directory, which is ready to serve or deploy to static host providers like Vercel or Render.

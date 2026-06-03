@@ -1,9 +1,9 @@
 const jwt = require("jsonwebtoken");
 
-// In-memory OTP storage to avoid writing OTPs to MongoDB (completely stateless database-wise)
+// local otp map
 const otpStore = new Map();
 
-// create OTP
+// gen rate otp
 async function createOTP(req, res) {
   try {
     const { emailOrPhone } = req.body;
@@ -11,7 +11,7 @@ async function createOTP(req, res) {
 
     console.log(`[LOGIN OTP for ${emailOrPhone}]: ${otp}`);
     
-    // Save to local memory map (valid for 10 minutes)
+    // save localy temp
     otpStore.set(emailOrPhone, {
       otp,
       expiresAt: Date.now() + 10 * 60 * 1000
@@ -24,7 +24,7 @@ async function createOTP(req, res) {
   }
 }
 
-// verify and login otp
+// chck otp auth
 async function verifyOTPAndLogin(req, res) {
   try {
     const { emailOrPhone, otp } = req.body;
@@ -34,13 +34,13 @@ async function verifyOTPAndLogin(req, res) {
       return res.status(400).json({ message: "Please enter a valid OTP" });
     }
     
-    // Clear OTP after verify
+    // remove otp now
     otpStore.delete(emailOrPhone);
     
-    // Create a mock user object representing the user (without DB dependency)
+    // mock usr obj
     const user = { emailOrPhone };
 
-    // Sign jwt token with emailOrPhone instead of database ObjectId
+    // sign token jwt
     const token = jwt.sign(
       { emailOrPhone: user.emailOrPhone }, 
       process.env.SECRET_KEY || "your-secret-key"

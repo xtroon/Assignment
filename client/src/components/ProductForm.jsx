@@ -15,7 +15,7 @@ const ProductForm = ({ onClose, onCreate, initialData, onUpdate }) => {
   const [images, setImages] = useState([]);
   const [errors, setErrors] = useState({});
 
-  // populate for edit
+  // edit edit
   useEffect(() => {
     if (initialData) {
       setFormData({
@@ -50,7 +50,6 @@ const ProductForm = ({ onClose, onCreate, initialData, onUpdate }) => {
     setImages(updatedImages);
   };
 
-  // Helper for image previews - safely handles existing URLs (strings) and new files (blobs)
   const getImagePreviewUrl = (img) => {
     if (!img) return "";
     if (typeof img === "string") return img;
@@ -66,33 +65,33 @@ const ProductForm = ({ onClose, onCreate, initialData, onUpdate }) => {
   const validateForm = () => {
     let newErrors = {};
 
-    // Product Name
+    // name
     if (!formData.productName.trim()) {
       newErrors.productName = "Enter product name";
     }
 
-    // Quantity
+    // stoxck
     if (!formData.quantityStock) {
       newErrors.quantityStock = "Enter quantity";
     } else if (Number(formData.quantityStock) <= 0) {
       newErrors.quantityStock = "Quantity must be greater than 0";
     }
 
-    // MRP
+    // mrp
     if (!formData.mrp) {
       newErrors.mrp = "Enter MRP";
     } else if (Number(formData.mrp) <= 0) {
       newErrors.mrp = "MRP must be greater than 0";
     }
 
-    // Selling Price
+    // price
     if (!formData.sellingPrice) {
       newErrors.sellingPrice = "Enter selling price";
     } else if (Number(formData.sellingPrice) <= 0) {
       newErrors.sellingPrice = "Selling price must be greater than 0";
     }
 
-    // Selling Price <= MRP
+    // price <= mrp
     if (
       formData.mrp &&
       formData.sellingPrice &&
@@ -101,12 +100,12 @@ const ProductForm = ({ onClose, onCreate, initialData, onUpdate }) => {
       newErrors.sellingPrice = "Selling price cannot be greater than MRP";
     }
 
-    // Brand Name
+    // brand
     if (!formData.brandName.trim()) {
       newErrors.brandName = "Enter brand name";
     }
 
-    // At least one image
+    // image
     if (images.length === 0) {
       newErrors.images = "Please upload at least one image";
     }
@@ -139,7 +138,7 @@ const ProductForm = ({ onClose, onCreate, initialData, onUpdate }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
       <div className="w-full max-w-md rounded-lg bg-white shadow-lg">
-        {/* Header */}
+        {/* header */}
         <div className="flex items-center justify-between border-b border-gray-200 p-4">
           <h2 className="text-lg font-semibold">{initialData ? "Edit Product" : "Add Product"}</h2>
 
@@ -148,9 +147,9 @@ const ProductForm = ({ onClose, onCreate, initialData, onUpdate }) => {
           </button>
         </div>
 
-        {/* Form */}
+        {/* form */}
         <form onSubmit={handleSubmit} className="space-y-2 p-5">
-          {/* Product Name */}
+          {/* name */}
           <div>
             <label className="block mb-1 text-sm">Product Name</label>
 
@@ -167,7 +166,7 @@ const ProductForm = ({ onClose, onCreate, initialData, onUpdate }) => {
             )}
           </div>
 
-          {/* Product Type */}
+          {/* type */}
           <div>
             <label className="block mb-1 text-sm">Product Type</label>
 
@@ -185,7 +184,7 @@ const ProductForm = ({ onClose, onCreate, initialData, onUpdate }) => {
             </select>
           </div>
 
-          {/* Quantity */}
+          {/* quantity */}
           <div>
             <label className="block mb-1 text-sm">Quantity Stock</label>
 
@@ -204,7 +203,7 @@ const ProductForm = ({ onClose, onCreate, initialData, onUpdate }) => {
             )}
           </div>
 
-          {/* MRP */}
+          {/* mrp */}
           <div>
             <label className="block mb-1 text-sm">MRP</label>
 
@@ -221,7 +220,7 @@ const ProductForm = ({ onClose, onCreate, initialData, onUpdate }) => {
             )}
           </div>
 
-          {/* Selling Price */}
+          {/* sell pricxe */}
           <div>
             <label className="block mb-1 text-sm">Selling Price</label>
 
@@ -238,7 +237,7 @@ const ProductForm = ({ onClose, onCreate, initialData, onUpdate }) => {
             )}
           </div>
 
-          {/* Brand */}
+          {/* brand */}
           <div>
             <label className="block mb-1 text-sm">Brand Name</label>
 
@@ -255,7 +254,7 @@ const ProductForm = ({ onClose, onCreate, initialData, onUpdate }) => {
             )}
           </div>
 
-          {/* Images */}
+          {/* images */}
           <div>
             <label className="block mb-2 text-sm">Upload Images</label>
 
@@ -296,7 +295,7 @@ const ProductForm = ({ onClose, onCreate, initialData, onUpdate }) => {
             )}
           </div>
 
-          {/* Return Eligibility */}
+          {/* return */}
           <div>
             <label className="block mb-1 text-sm ">Exchange / Return</label>
 
@@ -311,7 +310,7 @@ const ProductForm = ({ onClose, onCreate, initialData, onUpdate }) => {
             </select>
           </div>
 
-          {/* Submit */}
+          {/* submit */}
           <div className="flex justify-end">
             <button
               type="submit"

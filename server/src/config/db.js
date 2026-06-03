@@ -1,6 +1,6 @@
 const mongoose = require("mongoose")
 
-// Handle connection error events to prevent node process crash when MongoDB is offline
+// db err handle
 mongoose.connection.on("error", (err) => {
     console.error(`Mongoose connection error: ${err}`);
 });

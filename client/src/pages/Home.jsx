@@ -5,6 +5,7 @@ import Header from "../components/Header";
 import ProductCard from "../components/ProductCard";
 import ProductForm from "../components/ProductForm";
 import DeletePopup from "../components/DeletePopup";
+import Toast from "../components/Toast";
 import notFound from "../assets/notFound.png";
 import {
   fetchProductsApi,
@@ -21,6 +22,16 @@ const Home = () => {
   const [itemPopup, setItemPopup] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [toast, setToast] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const savedToast = sessionStorage.getItem("toastMessage");
+    if (savedToast) {
+      setToast(savedToast);
+      sessionStorage.removeItem("toastMessage");
+    }
+  }, []);
 
   const loadProducts = async () => {
     setLoading(true);
@@ -68,6 +79,7 @@ const Home = () => {
       await deleteProductApi(product.id);
       loadProducts();
       setDeleteTarget(null);
+      setToast("Product Deleted Successfully");
     } catch (err) {
       console.error("Error deleting product:", err);
       alert(err.message || "Failed to delete product");
@@ -82,6 +94,7 @@ const Home = () => {
   const handleUpdate = async (updated) => {
     try {
       await updateProductApi(updated.id, updated);
+      sessionStorage.setItem("toastMessage", "Product updated Successfully");
       window.location.reload();
     } catch (err) {
       console.error("Error updating product:", err);
@@ -90,33 +103,39 @@ const Home = () => {
   };
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar />
+    <div className="flex min-h-screen relative overflow-x-hidden">
+      {/* mobile view */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[1px] md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
-      <main className="flex-1 bg-white">
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
+      <main className="flex-1 min-w-0 bg-white">
         <div className="bg-white">
-          <Header />
+          <Header onMenuClick={() => setSidebarOpen(true)} />
 
-          {/* Tabs */}
+          {/* sections */}
           <div className="flex gap-8 px-6 border-b border-gray-200">
             <button
               onClick={() => setActive("published")}
-              className={`py-3 text-sm font-medium cursor-pointer transition-colors ${
-                active === "published"
+              className={`py-3 text-sm font-medium cursor-pointer transition-colors ${active === "published"
                   ? "border-b-2 border-blue-500 text-black font-semibold"
                   : "text-slate-500 hover:text-black"
-              }`}
+                }`}
             >
               Published
             </button>
 
             <button
               onClick={() => setActive("unpublished")}
-              className={`py-3 text-sm font-medium cursor-pointer transition-colors ${
-                active === "unpublished"
+              className={`py-3 text-sm font-medium cursor-pointer transition-colors ${active === "unpublished"
                   ? "border-b-2 border-blue-500 text-black font-semibold"
                   : "text-slate-500 hover:text-black"
-              }`}
+                }`}
             >
               Unpublished
             </button>
@@ -161,7 +180,7 @@ const Home = () => {
               </div>
             </div>
           ) : (
-            /* Products Grid */
+            /* products */
             !loading && (
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
                 {products.map((product) => (
@@ -178,7 +197,7 @@ const Home = () => {
           )}
         </div>
 
-        {/* Modal */}
+        {/* pop edit */}
         {itemPopup && (
           <ProductForm
             onClose={() => {
@@ -196,6 +215,8 @@ const Home = () => {
           onClose={() => setDeleteTarget(null)}
           onConfirm={confirmDelete}
         />
+
+        <Toast message={toast} onClose={() => setToast("")} />
       </main>
     </div>
   );

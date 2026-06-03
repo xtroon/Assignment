@@ -1,14 +1,14 @@
 const Product = require("../models/product.model")
 const cloudinary = require("cloudinary").v2;
 
-// Cloudinary config - reads credentials from environment variables
+// cloud config init
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Streams file buffer directly to Cloudinary
+// upload buffer cloud
 const uploadToCloudinary = (fileBuffer) => {
     return new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
@@ -22,7 +22,7 @@ const uploadToCloudinary = (fileBuffer) => {
     });
 };
 
-// create new product
+// create new prod
 async function createProduct(req, res) {
     try {
         const productData = { ...req.body, emailOrPhone: req.user.emailOrPhone };
@@ -35,7 +35,7 @@ async function createProduct(req, res) {
             productData.exchangeEligible = req.body.exchangeReturn;
         }
 
-        // Upload files to Cloudinary if provided
+        // uplod files cloud
         let imageUrls = [];
         if (req.files && req.files.length > 0) {
             const uploadPromises = req.files.map(file => uploadToCloudinary(file.buffer));
@@ -56,7 +56,7 @@ async function createProduct(req, res) {
 }
 
 
-// edit product
+// edit prod info
 async function updateProduct(req, res) {
     try {
         const id = req.params.id;
@@ -70,14 +70,14 @@ async function updateProduct(req, res) {
             updateData.exchangeEligible = req.body.exchangeReturn;
         }
 
-        // Upload new files to Cloudinary
+        // upload new img
         let newImageUrls = [];
         if (req.files && req.files.length > 0) {
             const uploadPromises = req.files.map(file => uploadToCloudinary(file.buffer));
             newImageUrls = await Promise.all(uploadPromises);
         }
 
-        // Extract any existing string image URLs that were preserved
+        // get old urls
         let existingImages = [];
         if (req.body.images) {
             existingImages = Array.isArray(req.body.images)
@@ -85,7 +85,7 @@ async function updateProduct(req, res) {
                 : [req.body.images];
         }
 
-        // Combine existing with newly uploaded images
+        // merge img arrays
         updateData.productImages = [...existingImages, ...newImageUrls];
 
         const updatedProduct = await Product.findOneAndUpdate(
@@ -107,7 +107,7 @@ async function updateProduct(req, res) {
 }
 
 
-//delete product
+// remove prod item
 
 async function deleteProduct(req, res){
     try{
@@ -122,7 +122,7 @@ async function deleteProduct(req, res){
     }
 }
 
-//get products on base of params and query pass
+// fetch products filter
 
 async function getProducts(req, res) {
     try {

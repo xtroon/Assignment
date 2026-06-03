@@ -3,7 +3,7 @@ const cors = require("cors")
 
 const app = express()
 
-// importing routes
+// import route list
 const authRoute = require("./routes/auth.route")
 const productRoute = require("./routes/product.route")
 

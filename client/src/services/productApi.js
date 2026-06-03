@@ -2,10 +2,10 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/v1/api";
 const PRODUCT_BASE = `${API_URL}/product`;
 const AUTH_BASE = `${API_URL}/login`;
 
-// Helper to get auth token
+// get auth tkn
 const getAuthToken = () => localStorage.getItem("token");
 
-// Get Products (supports status filtering)
+// get prod list
 export const fetchProductsApi = async (status = "") => {
   const token = getAuthToken();
   const query = status ? `?status=${status}` : "";
@@ -24,7 +24,7 @@ export const fetchProductsApi = async (status = "") => {
   return await res.json();
 };
 
-// Create Product
+// add new prod
 export const createProductApi = async (product) => {
   const token = getAuthToken();
   const formData = new FormData();
@@ -63,7 +63,7 @@ export const createProductApi = async (product) => {
   return await res.json();
 };
 
-// Update Product
+// edit prod info
 export const updateProductApi = async (id, product) => {
   const token = getAuthToken();
   const formData = new FormData();
@@ -102,7 +102,7 @@ export const updateProductApi = async (id, product) => {
   return await res.json();
 };
 
-// Delete Product
+// del prod item
 export const deleteProductApi = async (id) => {
   const token = getAuthToken();
   const res = await fetch(`${PRODUCT_BASE}/delete-product/${id}`, {
@@ -119,7 +119,7 @@ export const deleteProductApi = async (id) => {
   return await res.json();
 };
 
-// Request OTP from backend
+// req otp backend
 export const createOtpApi = async (emailOrPhone) => {
   const res = await fetch(`${AUTH_BASE}/create-otp`, {
     method: "POST",
@@ -137,7 +137,7 @@ export const createOtpApi = async (emailOrPhone) => {
   return await res.json();
 };
 
-// Verify OTP and sign in
+// chck otp sign
 export const verifyOtpApi = async (emailOrPhone, otp) => {
   const res = await fetch(`${AUTH_BASE}/verify-otp`, {
     method: "POST",

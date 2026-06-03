@@ -16,7 +16,6 @@ const ProtectedRoute = ({ children }) => {
   if (!token) {
     return <Navigate to="/login" replace />;
   }
-
   return children;
 };
 
@@ -24,39 +23,16 @@ const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Default Route */}
-        <Route
-          path="/"
-          element={<Navigate to="/login" replace />}
-        />
+        <Route path="/" element={<Navigate to="/login" replace />} />
 
-        {/* Public Route */}
         <Route path="/login" element={<Login />} />
 
-        {/* Protected Routes */}
-        <Route
-          path="/home"
-          element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
 
-        <Route
-          path="/products"
-          element={
-            <ProtectedRoute>
-              <Product />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/products" element={<ProtectedRoute><Product /></ProtectedRoute>} />
 
-        {/* Invalid URL */}
-        <Route
-          path="*"
-          element={<Navigate to="/login" replace />}
-        />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+
       </Routes>
     </BrowserRouter>
   );

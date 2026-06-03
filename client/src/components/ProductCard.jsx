@@ -24,7 +24,7 @@ const ProductCard = ({ product, onEdit, onTogglePublish, onDelete }) => {
 
   return (
     <div className="w-full rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      {/* Image */}
+      {/* img block */}
       <div className="rounded-xl border border-slate-200 bg-white p-4 flex items-center justify-center h-48">
         <img
           src={getImageSrc(product.images?.[activeImage])}
@@ -33,7 +33,7 @@ const ProductCard = ({ product, onEdit, onTogglePublish, onDelete }) => {
         />
       </div>
 
-      {/* Dots */}
+      {/* img dots */}
       <div className="mt-3 flex justify-center">
         <div className="inline-flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-full px-2.5 py-1">
           {(product.images?.length ? [...Array(product.images.length)] : [0]).map((_, i) => (
@@ -49,12 +49,12 @@ const ProductCard = ({ product, onEdit, onTogglePublish, onDelete }) => {
         </div>
       </div>
 
-      {/* Product Name */}
+
       <h2 className="mt-4 text-base font-bold text-gray-900 truncate">
         {product.productName}
       </h2>
 
-      {/* Details */}
+
       <div className="mt-4 space-y-2 text-sm">
         <div className="flex justify-between items-center">
           <span className="text-slate-400">Product type -</span>
@@ -92,7 +92,7 @@ const ProductCard = ({ product, onEdit, onTogglePublish, onDelete }) => {
         </div>
       </div>
 
-      {/* Buttons */}
+      {/* actn btns */}
       <div className="mt-5 flex items-center gap-3">
         <button
           onClick={() => onTogglePublish?.(product)}

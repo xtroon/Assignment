@@ -5,7 +5,7 @@ const DeletePopup = ({ open, product, onClose, onConfirm }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
+      <div className="w-full max-w-md mx-4 rounded-lg bg-white p-6 shadow-lg">
         <h3 className="text-lg font-semibold mb-2">Delete Product</h3>
         <p className="text-sm text-gray-600 mb-6">
           Are you sure you really want to delete this Product 

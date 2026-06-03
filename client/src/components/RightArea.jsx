@@ -34,7 +34,7 @@ const RightArea = () => {
     try {
       const data = await createOtpApi(email);
       if (data && data.otp) {
-        console.log("OTP for login:", data.otp);
+        console.log("OTP is:", data.otp);
       }
       setShowOtp(true);
       setResendTimer(30);
@@ -103,7 +103,7 @@ const RightArea = () => {
   };
 
   return (
-    <div className="flex flex-1 flex-col justify-center items-center px-16 py-12 gap-50">
+    <div className="flex flex-1 flex-col justify-center items-center px-6 md:px-16 py-12 gap-50">
       <div className="w-full max-w-md">
         <h1 className="mb-12 text-center text-2xl font-bold text-gray-900">
           Login to your Productr Account
@@ -143,7 +143,7 @@ const RightArea = () => {
           <form onSubmit={handleVerifyOtp}>
             <div>
               <label className="mb-3 block text-sm text-gray-700">
-                Enter OTP
+                Enter OTP <span className="text-gray-400 text-xs font-normal italic ml-1">(OTP is in console)</span>
               </label>
 
               <div className="flex gap-2">

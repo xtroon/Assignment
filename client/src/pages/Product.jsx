@@ -4,6 +4,7 @@ import Header from "../components/Header";
 import ProductForm from "../components/ProductForm";
 import ProductCard from "../components/ProductCard";
 import DeletePopup from "../components/DeletePopup";
+import Toast from "../components/Toast";
 import notFound from "../assets/notFound.png";
 import {
   fetchProductsApi,
@@ -19,13 +20,23 @@ const Product = () => {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [toast, setToast] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const savedToast = sessionStorage.getItem("toastMessage");
+    if (savedToast) {
+      setToast(savedToast);
+      sessionStorage.removeItem("toastMessage");
+    }
+  }, []);
 
   const loadProducts = async () => {
     setLoading(true);
     setError("");
     try {
       const data = await fetchProductsApi();
-      // Map database schema models to frontend expectations
+      // map db schema
       const mapped = data.map((p) => ({
         ...p,
         id: p._id,
@@ -48,6 +59,7 @@ const Product = () => {
   const handleCreate = async (product) => {
     try {
       await createProductApi(product);
+      sessionStorage.setItem("toastMessage", "Product added Successfully");
       window.location.reload();
     } catch (err) {
       console.error("Error creating product:", err);
@@ -63,6 +75,7 @@ const Product = () => {
   const handleUpdate = async (updated) => {
     try {
       await updateProductApi(updated.id, updated);
+      sessionStorage.setItem("toastMessage", "Product updated Successfully");
       window.location.reload();
     } catch (err) {
       console.error("Error updating product:", err);
@@ -92,6 +105,7 @@ const Product = () => {
       await deleteProductApi(product.id);
       loadProducts();
       setDeleteTarget(null);
+      setToast("Product Deleted Successfully");
     } catch (err) {
       console.error("Error deleting product:", err);
       alert(err.message || "Failed to delete product");
@@ -99,14 +113,21 @@ const Product = () => {
   };
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar />
+    <div className="flex min-h-screen relative overflow-x-hidden">
+      {/* siebar */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[1px] md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
-      <main className="flex-1 bg-white">
-        <Header />
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
+      <main className="flex-1 min-w-0 bg-white">
+        <Header onMenuClick={() => setSidebarOpen(true)} />
 
         <div className="mx-auto p-8">
-          {/* Loading & Error Indicators */}
           {loading && (
             <div className="text-center py-10 text-slate-500 font-medium">
               Loading products...
@@ -119,7 +140,7 @@ const Product = () => {
             </div>
           )}
 
-          {/* Empty State */}
+          {/* empty */}
           {!loading && products.length === 0 ? (
             <div className="flex h-[520px] items-center justify-center rounded-lg bg-white">
               <div className="text-center">
@@ -147,10 +168,9 @@ const Product = () => {
               </div>
             </div>
           ) : (
-            /* Product Grid */
+            /* products */
             !loading && (
               <div>
-                {/* Top Bar */}
                 <div className="mb-6 flex items-center justify-between">
                   <h1 className="text-2xl font-semibold text-slate-800">
                     Products
@@ -179,7 +199,7 @@ const Product = () => {
           )}
         </div>
 
-        {/* Modal */}
+        {/* form add product */}
         {itemPopup && (
           <ProductForm
             onClose={() => {
@@ -198,6 +218,8 @@ const Product = () => {
           onClose={() => setDeleteTarget(null)}
           onConfirm={confirmDelete}
         />
+
+        <Toast message={toast} onClose={() => setToast("")} />
       </main>
     </div>
   );
