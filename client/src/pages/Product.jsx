@@ -48,7 +48,7 @@ const Product = () => {
   const handleCreate = async (product) => {
     try {
       await createProductApi(product);
-      loadProducts();
+      window.location.reload();
     } catch (err) {
       console.error("Error creating product:", err);
       alert(err.message || "Failed to create product");
@@ -63,8 +63,7 @@ const Product = () => {
   const handleUpdate = async (updated) => {
     try {
       await updateProductApi(updated.id, updated);
-      loadProducts();
-      setEditingProduct(null);
+      window.location.reload();
     } catch (err) {
       console.error("Error updating product:", err);
       alert(err.message || "Failed to update product");
@@ -106,7 +105,7 @@ const Product = () => {
       <main className="flex-1 bg-white">
         <Header />
 
-        <div className="mx-auto max-w-7xl px-8 py-6">
+        <div className="mx-auto p-8">
           {/* Loading & Error Indicators */}
           {loading && (
             <div className="text-center py-10 text-slate-500 font-medium">
@@ -122,7 +121,7 @@ const Product = () => {
 
           {/* Empty State */}
           {!loading && products.length === 0 ? (
-            <div className="flex h-[520px] items-center justify-center rounded-lg bg-white border border-gray-200">
+            <div className="flex h-[520px] items-center justify-center rounded-lg bg-white">
               <div className="text-center">
                 <img
                   src={notFound}

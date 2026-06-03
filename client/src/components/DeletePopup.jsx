@@ -8,7 +8,8 @@ const DeletePopup = ({ open, product, onClose, onConfirm }) => {
       <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
         <h3 className="text-lg font-semibold mb-2">Delete Product</h3>
         <p className="text-sm text-gray-600 mb-6">
-          Are you sure you really want to delete the Product "{product?.productName}" ?
+          Are you sure you really want to delete this Product 
+          <span className="text-gray-800 font-semibold">"{product?.productName}"</span> ?
         </p>
 
         <div className="flex justify-end gap-3">

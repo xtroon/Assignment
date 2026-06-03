@@ -31,7 +31,7 @@ async function verifyOTPAndLogin(req, res) {
     
     const record = otpStore.get(emailOrPhone);
     if (!record || record.otp !== otp || record.expiresAt < Date.now()) {
-      return res.status(400).json({ message: "Invalid or expired OTP" });
+      return res.status(400).json({ message: "Please enter a valid OTP" });
     }
     
     // Clear OTP after verify

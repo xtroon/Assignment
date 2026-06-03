@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { createOtpApi, verifyOtpApi } from "../services/productApi";
 
@@ -11,6 +11,19 @@ const RightArea = () => {
   const [otpError, setOtpError] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [resendTimer, setResendTimer] = useState(0);
+
+  useEffect(() => {
+    let interval = null;
+    if (showOtp && resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [showOtp, resendTimer]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -24,6 +37,7 @@ const RightArea = () => {
         console.log("OTP for login:", data.otp);
       }
       setShowOtp(true);
+      setResendTimer(30);
     } catch (err) {
       setError(err.message || "Failed to send OTP. Please try again.");
     } finally {
@@ -43,11 +57,16 @@ const RightArea = () => {
     }
   };
 
+  const handleKeyDown = (e, index) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      document.getElementById(`otp-${index - 1}`).focus();
+    }
+  };
+
   const handleVerifyOtp = async (e) => {
     if (e) e.preventDefault();
     const otpValue = otp.join("");
     if (otpValue.length < 6) {
-      setOtpError("Please enter a 6-digit OTP");
       return;
     }
     setOtpError("");
@@ -59,13 +78,14 @@ const RightArea = () => {
       localStorage.setItem("user", JSON.stringify(data.user));
       navigate("/home");
     } catch (err) {
-      setOtpError(err.message || "Invalid or expired OTP");
+      setOtpError(err.message || "Please enter a valid OTP");
     } finally {
       setLoading(false);
     }
   };
 
   const handleResend = async () => {
+    if (resendTimer > 0) return;
     setLoading(true);
     setOtpError("");
     try {
@@ -73,6 +93,7 @@ const RightArea = () => {
       if (data && data.otp) {
         console.log("Resent OTP:", data.otp);
       }
+      setResendTimer(30);
       alert("OTP resent successfully!");
     } catch (err) {
       setOtpError(err.message || "Failed to resend OTP");
@@ -134,6 +155,7 @@ const RightArea = () => {
                     maxLength="1"
                     value={digit}
                     onChange={(e) => handleOtpChange(e.target.value, index)}
+                    onKeyDown={(e) => handleKeyDown(e, index)}
                     className="h-12 w-12 rounded-md border text-center text-lg font-semibold outline-none"
                     disabled={loading}
                   />
@@ -155,12 +177,18 @@ const RightArea = () => {
 
             <p className="mt-4 text-center text-sm text-gray-500">
               Didn't receive OTP?{" "}
-              <span
-                onClick={handleResend}
-                className="cursor-pointer font-semibold text-blue-700 hover:underline"
-              >
-                Resend
-              </span>
+              {resendTimer > 0 ? (
+                <span className="text-blue-700 font-bold ">
+                  Resend in {resendTimer}s
+                </span>
+              ) : (
+                <span
+                  onClick={handleResend}
+                  className="cursor-pointer font-semibold text-blue-700 hover:underline"
+                >
+                  Resend
+                </span>
+              )}
             </p>
           </form>
         )}

@@ -149,7 +149,7 @@ export const verifyOtpApi = async (emailOrPhone, otp) => {
 
   if (!res.ok) {
     const errorData = await res.json();
-    throw new Error(errorData.message || "Invalid or expired OTP");
+    throw new Error(errorData.message || "Please enter a valid OTP");
   }
 
   return await res.json();

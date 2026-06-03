@@ -140,7 +140,7 @@ const ProductForm = ({ onClose, onCreate, initialData, onUpdate }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
       <div className="w-full max-w-md rounded-lg bg-white shadow-lg">
         {/* Header */}
-        <div className="flex items-center justify-between border-b p-4">
+        <div className="flex items-center justify-between border-b border-gray-200 p-4">
           <h2 className="text-lg font-semibold">{initialData ? "Edit Product" : "Add Product"}</h2>
 
           <button onClick={onClose}>
@@ -149,7 +149,7 @@ const ProductForm = ({ onClose, onCreate, initialData, onUpdate }) => {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4 p-5">
+        <form onSubmit={handleSubmit} className="space-y-2 p-5">
           {/* Product Name */}
           <div>
             <label className="block mb-1 text-sm">Product Name</label>
@@ -159,7 +159,7 @@ const ProductForm = ({ onClose, onCreate, initialData, onUpdate }) => {
               name="productName"
               value={formData.productName}
               onChange={handleChange}
-              className="w-full border rounded p-2"
+              className="w-full border border-gray-300 rounded p-2"
             />
 
             {errors.productName && (
@@ -175,7 +175,7 @@ const ProductForm = ({ onClose, onCreate, initialData, onUpdate }) => {
               name="productType"
               value={formData.productType}
               onChange={handleChange}
-              className="w-full border rounded p-2"
+              className="w-full border border-gray-300 rounded p-2"
             >
               <option>Foods</option>
               <option>Electronics</option>
@@ -194,7 +194,7 @@ const ProductForm = ({ onClose, onCreate, initialData, onUpdate }) => {
               name="quantityStock"
               value={formData.quantityStock}
               onChange={handleChange}
-              className="w-full border rounded p-2"
+              className="w-full border border-gray-300 rounded p-2"
             />
 
             {errors.quantityStock && (
@@ -213,7 +213,7 @@ const ProductForm = ({ onClose, onCreate, initialData, onUpdate }) => {
               name="mrp"
               value={formData.mrp}
               onChange={handleChange}
-              className="w-full border rounded p-2"
+              className="w-full border border-gray-300 rounded p-2"
             />
 
             {errors.mrp && (
@@ -230,7 +230,7 @@ const ProductForm = ({ onClose, onCreate, initialData, onUpdate }) => {
               name="sellingPrice"
               value={formData.sellingPrice}
               onChange={handleChange}
-              className="w-full border rounded p-2"
+              className="w-full border border-gray-300 rounded p-2"
             />
 
             {errors.sellingPrice && (
@@ -247,7 +247,7 @@ const ProductForm = ({ onClose, onCreate, initialData, onUpdate }) => {
               name="brandName"
               value={formData.brandName}
               onChange={handleChange}
-              className="w-full border rounded p-2"
+              className="w-full border border-gray-300 rounded p-2"
             />
 
             {errors.brandName && (
@@ -259,7 +259,7 @@ const ProductForm = ({ onClose, onCreate, initialData, onUpdate }) => {
           <div>
             <label className="block mb-2 text-sm">Upload Images</label>
 
-            <label className="flex flex-col items-center justify-center h-24 border-2 border-dashed rounded cursor-pointer">
+            <label className="flex flex-col items-center justify-center h-24 border border-gray-300 rounded cursor-pointer">
               <Upload size={24} />
 
               <span className="text-sm">Click to upload</span>
@@ -298,13 +298,13 @@ const ProductForm = ({ onClose, onCreate, initialData, onUpdate }) => {
 
           {/* Return Eligibility */}
           <div>
-            <label className="block mb-1 text-sm">Exchange / Return</label>
+            <label className="block mb-1 text-sm ">Exchange / Return</label>
 
             <select
               name="exchangeReturn"
               value={formData.exchangeReturn}
               onChange={handleChange}
-              className="w-full border rounded p-2"
+              className="w-full border border-gray-300 rounded p-2"
             >
               <option>Yes</option>
               <option>No</option>
@@ -312,12 +312,14 @@ const ProductForm = ({ onClose, onCreate, initialData, onUpdate }) => {
           </div>
 
           {/* Submit */}
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-          >
-            {initialData ? "Update Product" : "Create Product"}
-          </button>
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              className="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700"
+            >
+              {initialData ? "Update Product" : "Create Product"}
+            </button>
+          </div>
         </form>
       </div>
     </div>

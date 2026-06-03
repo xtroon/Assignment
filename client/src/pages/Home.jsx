@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import ProductCard from "../components/ProductCard";
+import ProductForm from "../components/ProductForm";
+import DeletePopup from "../components/DeletePopup";
 import notFound from "../assets/notFound.png";
 import {
   fetchProductsApi,
@@ -14,6 +16,9 @@ const Home = () => {
   const navigate = useNavigate();
   const [active, setActive] = useState("published");
   const [products, setProducts] = useState([]);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [itemPopup, setItemPopup] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -54,20 +59,34 @@ const Home = () => {
     }
   };
 
-  const handleDelete = async (product) => {
-    if (window.confirm(`Are you sure you want to delete "${product.productName}"?`)) {
-      try {
-        await deleteProductApi(product.id);
-        loadProducts();
-      } catch (err) {
-        console.error("Error deleting product:", err);
-      }
+  const handleDelete = (product) => {
+    setDeleteTarget(product);
+  };
+
+  const confirmDelete = async (product) => {
+    try {
+      await deleteProductApi(product.id);
+      loadProducts();
+      setDeleteTarget(null);
+    } catch (err) {
+      console.error("Error deleting product:", err);
+      alert(err.message || "Failed to delete product");
     }
   };
 
-  const handleEdit = () => {
-    // Navigate to products management page to edit
-    navigate("/products");
+  const handleEdit = (product) => {
+    setEditingProduct(product);
+    setItemPopup(true);
+  };
+
+  const handleUpdate = async (updated) => {
+    try {
+      await updateProductApi(updated.id, updated);
+      window.location.reload();
+    } catch (err) {
+      console.error("Error updating product:", err);
+      alert(err.message || "Failed to update product");
+    }
   };
 
   return (
@@ -104,7 +123,7 @@ const Home = () => {
           </div>
         </div>
 
-        <div className="mx-auto max-w-5xl px-8 py-6">
+        <div className="mx-auto p-8">
           {loading && (
             <div className="text-center py-10 text-slate-500 font-medium">
               Loading products...
@@ -118,7 +137,7 @@ const Home = () => {
           )}
 
           {!loading && products.length === 0 ? (
-            <div className="border border-gray-200 rounded-lg bg-white h-[520px] flex items-center justify-center">
+            <div className="rounded-lg bg-white h-[520px] flex items-center justify-center">
               <div className="text-center">
                 <img src={notFound} alt="empty" className="mx-auto h-16 w-16 mb-4" />
                 <h3 className="text-lg font-semibold text-black mb-2">
@@ -158,6 +177,25 @@ const Home = () => {
             )
           )}
         </div>
+
+        {/* Modal */}
+        {itemPopup && (
+          <ProductForm
+            onClose={() => {
+              setItemPopup(false);
+              setEditingProduct(null);
+            }}
+            initialData={editingProduct}
+            onUpdate={handleUpdate}
+          />
+        )}
+
+        <DeletePopup
+          open={!!deleteTarget}
+          product={deleteTarget}
+          onClose={() => setDeleteTarget(null)}
+          onConfirm={confirmDelete}
+        />
       </main>
     </div>
   );
