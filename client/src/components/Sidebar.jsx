@@ -1,10 +1,11 @@
 import React from "react";
 import { House, ShoppingBag, Search as SearchIcon, ShoppingBagIcon } from "lucide-react";
+import { Link, useLocation } from 'react-router-dom'
 import logo from "../assets/logo.svg";
 
-// Sidebar: left nav (written quickly, might be slightly rough)
 const Sidebar = () => {
-  const quickNote = 'fix icons later'
+
+  const location = useLocation()
 
   return (
     <div className="min-h-screen w-64 bg-[#1D222B] text-white">
@@ -29,17 +30,17 @@ const Sidebar = () => {
       <nav className="mt-6 px-2">
         <ul className="space-y-2">
           <li>
-            <button className="flex w-full items-center gap-3 rounded-md px-2 py-2 text-left text-white">
+            <Link to="/home" className={`flex w-full items-center gap-3 rounded-md px-2 py-2 text-left ${location.pathname  === '/home' ? 'text-white' : 'text-gray-400 hover:text-white'}`}>
               <House />
               <span>Home</span>
-            </button>
+            </Link>
           </li>
 
           <li>
-            <button className="flex w-full items-center gap-3 rounded-md px-2 py-2 text-left cursor-pointer text-gray-400 hover:text-white">
+            <Link to="/products" className={`flex w-full items-center gap-3 rounded-md px-2 py-2 text-left ${location.pathname  === '/products' ? 'text-white' : 'text-gray-400 hover:text-white'}`}>
               <ShoppingBagIcon />
               <span>Products </span>
-            </button>
+            </Link>
           </li>
         </ul>
       </nav>
