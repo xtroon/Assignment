@@ -3,6 +3,7 @@
 A full-stack application with a React (Vite) frontend and Express/MongoDB backend.
 
 Live: https://productr0.vercel.app/
+(Use email: "omt81144@gmail.com" to view sample products, so you don't have to upload yourself :))
 
 ## Project Structure
 
