@@ -1,7 +1,7 @@
-const User = require("../models/user.model");
-const Otp = require("../models/otp.model");
 const jwt = require("jsonwebtoken");
 
+// In-memory OTP storage to avoid writing OTPs to MongoDB (completely stateless database-wise)
+const otpStore = new Map();
 
 // create OTP
 async function createOTP(req, res) {
@@ -9,14 +9,18 @@ async function createOTP(req, res) {
     const { emailOrPhone } = req.body;
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    console.log(otp);
+    console.log(`[LOGIN OTP for ${emailOrPhone}]: ${otp}`);
     
-    await Otp.create({ emailOrPhone, otp, expiresAt: new Date(Date.now() + 10 * 60 * 1000) // 10 min 
+    // Save to local memory map (valid for 10 minutes)
+    otpStore.set(emailOrPhone, {
+      otp,
+      expiresAt: Date.now() + 10 * 60 * 1000
     });
     
-    res.status(201).json({ message: "OTP sent successfully" });
+    res.status(201).json({ message: "OTP sent successfully", otp });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Error in createOTP:", err);
+    res.status(500).json({ message: err.message });
   }
 }
 
@@ -25,24 +29,27 @@ async function verifyOTPAndLogin(req, res) {
   try {
     const { emailOrPhone, otp } = req.body;
     
-    const otpRecord = await Otp.findOne({ emailOrPhone, otp });
-    if (!otpRecord || otpRecord.expiresAt < new Date()) {
+    const record = otpStore.get(emailOrPhone);
+    if (!record || record.otp !== otp || record.expiresAt < Date.now()) {
       return res.status(400).json({ message: "Invalid or expired OTP" });
     }
     
-    // Find existing user or create new one
-    let user = await User.findOne({ emailOrPhone });
-    if (!user) {
-      user = await User.create({ emailOrPhone });
-    }
+    // Clear OTP after verify
+    otpStore.delete(emailOrPhone);
     
-    await Otp.deleteOne({ _id: otpRecord._id }); // deleting created otp
+    // Create a mock user object representing the user (without DB dependency)
+    const user = { emailOrPhone };
 
-    // making jwt token
-    const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY || "your-secret-key");
+    // Sign jwt token with emailOrPhone instead of database ObjectId
+    const token = jwt.sign(
+      { emailOrPhone: user.emailOrPhone }, 
+      process.env.SECRET_KEY || "your-secret-key"
+    );
+
     res.status(201).json({ message: "User Logged In", token, user });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Error in verifyOTPAndLogin:", err);
+    res.status(500).json({ message: err.message });
   }
 }
 

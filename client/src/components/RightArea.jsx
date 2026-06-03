@@ -1,19 +1,34 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { createOtpApi, verifyOtpApi } from "../services/productApi";
 
 //email , otp in one
 const RightArea = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [showOtp, setShowOtp] = useState(false);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [otpError, setOtpError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     if (!email.trim()) return;
 
-
-    setShowOtp(true);
+    setLoading(true);
+    setError("");
+    try {
+      const data = await createOtpApi(email);
+      if (data && data.otp) {
+        console.log("OTP for login:", data.otp);
+      }
+      setShowOtp(true);
+    } catch (err) {
+      setError(err.message || "Failed to send OTP. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleOtpChange = (value, index) => {
@@ -25,6 +40,44 @@ const RightArea = () => {
 
     if (value && index < 5) {
       document.getElementById(`otp-${index + 1}`).focus();
+    }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    if (e) e.preventDefault();
+    const otpValue = otp.join("");
+    if (otpValue.length < 6) {
+      setOtpError("Please enter a 6-digit OTP");
+      return;
+    }
+    setOtpError("");
+    setLoading(true);
+    try {
+      const data = await verifyOtpApi(email, otpValue);
+      // save token and user info
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      navigate("/home");
+    } catch (err) {
+      setOtpError(err.message || "Invalid or expired OTP");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    setLoading(true);
+    setOtpError("");
+    try {
+      const data = await createOtpApi(email);
+      if (data && data.otp) {
+        console.log("Resent OTP:", data.otp);
+      }
+      alert("OTP resent successfully!");
+    } catch (err) {
+      setOtpError(err.message || "Failed to resend OTP");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -49,19 +102,24 @@ const RightArea = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full rounded-lg border border-gray-300 px-4 py-3"
+                  disabled={loading}
                 />
+                {error && (
+                  <p className="mt-2 text-sm text-red-500">{error}</p>
+                )}
               </div>
 
               <button
                 type="submit"
-                className="w-full cursor-pointer rounded-lg bg-blue-900 py-3 font-semibold text-white"
+                disabled={loading}
+                className="w-full cursor-pointer rounded-lg bg-blue-900 py-3 font-semibold text-white disabled:opacity-50"
               >
-                Login
+                {loading ? "Sending..." : "Login"}
               </button>
             </form>
           </>
         ) : (
-          <>
+          <form onSubmit={handleVerifyOtp}>
             <div>
               <label className="mb-3 block text-sm text-gray-700">
                 Enter OTP
@@ -77,6 +135,7 @@ const RightArea = () => {
                     value={digit}
                     onChange={(e) => handleOtpChange(e.target.value, index)}
                     className="h-12 w-12 rounded-md border text-center text-lg font-semibold outline-none"
+                    disabled={loading}
                   />
                 ))}
               </div>
@@ -86,17 +145,24 @@ const RightArea = () => {
               )}
             </div>
 
-            <button className="mt-6 w-full rounded-lg bg-blue-900 py-3 font-semibold text-white">
-              Enter your OTP
+            <button
+              type="submit"
+              disabled={loading}
+              className="mt-6 w-full cursor-pointer rounded-lg bg-blue-900 py-3 font-semibold text-white hover:bg-blue-800 transition-colors disabled:opacity-50"
+            >
+              {loading ? "Verifying..." : "Enter your OTP"}
             </button>
 
             <p className="mt-4 text-center text-sm text-gray-500">
-              Didn't receive OTP? 
-              <span className="cursor-pointer font-semibold text-blue-700">
+              Didn't receive OTP?{" "}
+              <span
+                onClick={handleResend}
+                className="cursor-pointer font-semibold text-blue-700 hover:underline"
+              >
                 Resend
               </span>
             </p>
-          </>
+          </form>
         )}
       </div>
 

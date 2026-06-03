@@ -1,11 +1,20 @@
-const BASE =
-  import.meta.env.VITE_API_URL ||
-  "http://localhost:5000/v1/api/product";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/v1/api";
+const PRODUCT_BASE = `${API_URL}/product`;
+const AUTH_BASE = `${API_URL}/login`;
 
-// Get Products
-export const fetchProductsApi = async () => {
-  const res = await fetch(`${BASE}/get-products`, {
-    credentials: "include",
+// Helper to get auth token
+const getAuthToken = () => localStorage.getItem("token");
+
+// Get Products (supports status filtering)
+export const fetchProductsApi = async (status = "") => {
+  const token = getAuthToken();
+  const query = status ? `?status=${status}` : "";
+  
+  const res = await fetch(`${PRODUCT_BASE}/get-products${query}`, {
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
   });
 
   if (!res.ok) {
@@ -17,6 +26,7 @@ export const fetchProductsApi = async () => {
 
 // Create Product
 export const createProductApi = async (product) => {
+  const token = getAuthToken();
   const formData = new FormData();
 
   formData.append("productName", product.productName);
@@ -33,14 +43,21 @@ export const createProductApi = async (product) => {
     });
   }
 
-  const res = await fetch(`${BASE}/create-product`, {
+  if (product.status) {
+    formData.append("status", product.status);
+  }
+
+  const res = await fetch(`${PRODUCT_BASE}/create-product`, {
     method: "POST",
-    credentials: "include",
+    headers: {
+      "Authorization": `Bearer ${token}`
+    },
     body: formData,
   });
 
   if (!res.ok) {
-    throw new Error("Failed to create product");
+    const errorData = await res.json();
+    throw new Error(errorData.message || "Failed to create product");
   }
 
   return await res.json();
@@ -48,6 +65,7 @@ export const createProductApi = async (product) => {
 
 // Update Product
 export const updateProductApi = async (id, product) => {
+  const token = getAuthToken();
   const formData = new FormData();
 
   formData.append("productName", product.productName);
@@ -64,14 +82,21 @@ export const updateProductApi = async (id, product) => {
     });
   }
 
-  const res = await fetch(`${BASE}/update-product/${id}`, {
+  if (product.status) {
+    formData.append("status", product.status);
+  }
+
+  const res = await fetch(`${PRODUCT_BASE}/update-product/${id}`, {
     method: "PUT",
-    credentials: "include",
+    headers: {
+      "Authorization": `Bearer ${token}`
+    },
     body: formData,
   });
 
   if (!res.ok) {
-    throw new Error("Failed to update product");
+    const errorData = await res.json();
+    throw new Error(errorData.message || "Failed to update product");
   }
 
   return await res.json();
@@ -79,13 +104,52 @@ export const updateProductApi = async (id, product) => {
 
 // Delete Product
 export const deleteProductApi = async (id) => {
-  const res = await fetch(`${BASE}/delete-product/${id}`, {
+  const token = getAuthToken();
+  const res = await fetch(`${PRODUCT_BASE}/delete-product/${id}`, {
     method: "DELETE",
-    credentials: "include",
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
   });
 
   if (!res.ok) {
     throw new Error("Failed to delete product");
+  }
+
+  return await res.json();
+};
+
+// Request OTP from backend
+export const createOtpApi = async (emailOrPhone) => {
+  const res = await fetch(`${AUTH_BASE}/create-otp`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ emailOrPhone }),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.message || "Failed to send OTP");
+  }
+
+  return await res.json();
+};
+
+// Verify OTP and sign in
+export const verifyOtpApi = async (emailOrPhone, otp) => {
+  const res = await fetch(`${AUTH_BASE}/verify-otp`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ emailOrPhone, otp }),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.message || "Invalid or expired OTP");
   }
 
   return await res.json();

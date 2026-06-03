@@ -2,10 +2,10 @@ const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema(
     {
-        userId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
+        emailOrPhone: {
+            type: String,
             required: true,
+            trim: true,
         },
         
         productName: {
@@ -59,8 +59,8 @@ const productSchema = new mongoose.Schema(
             type: String,
             required: true,
             enum: [
-                "YES",
-                "NO"
+                "Yes",
+                "No"
             ],
         },
 

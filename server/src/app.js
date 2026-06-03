@@ -9,7 +9,10 @@ const productRoute = require("./routes/product.route")
 
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
 
 //use route
 app.use("/v1/api/login", authRoute);

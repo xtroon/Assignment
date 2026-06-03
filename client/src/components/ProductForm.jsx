@@ -50,6 +50,19 @@ const ProductForm = ({ onClose, onCreate, initialData, onUpdate }) => {
     setImages(updatedImages);
   };
 
+  // Helper for image previews - safely handles existing URLs (strings) and new files (blobs)
+  const getImagePreviewUrl = (img) => {
+    if (!img) return "";
+    if (typeof img === "string") return img;
+    try {
+      return URL.createObjectURL(img);
+    } catch (err) {
+      console.warn("Could not create object URL for preview:", err);
+      return "";
+    }
+  };
+
+
   const validateForm = () => {
     let newErrors = {};
 
@@ -265,7 +278,7 @@ const ProductForm = ({ onClose, onCreate, initialData, onUpdate }) => {
                 {images.map((img, index) => (
                   <div key={index} className="relative">
                     <img
-                      src={URL.createObjectURL(img)}
+                      src={getImagePreviewUrl(img)}
                       alt=""
                       className="w-16 h-16 rounded border object-cover"
                     />
